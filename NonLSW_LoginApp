@@ -1,0 +1,243 @@
+#!/usr/bin/python3
+# Non-LSW Carriers Admin: Login, Commissions Downloads, Pending Business.
+# This is file contains the Graphical User Interface (GUI) for navigating the application.
+# All passoword data has been removed
+# Rights reserved to Lydia Scherr
+# Created in February 2020, 
+# Last updated December 2020
+# Added to GitHub Nov 2021
+
+
+from selenium import webdriver
+import datetime
+import time 
+from selenium.webdriver.common.keys import  Keys
+from selenium.common.exceptions import TimeoutException
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
+from tkinter import *
+from tkinter import ttk
+from tkinter import messagebox
+
+def main():            
+    
+    root = Tk()
+    feedback = Feedback(root)
+    root.mainloop()
+
+class Feedback:
+
+    def __init__(self, master):
+        
+        ### MAIN FRAME ###
+        master.title('Non-LSW Commissions Donwloads')
+        master.resizable(True, True)
+        master.configure(background = '#0082c9')
+        master.columnconfigure(0, weight=1)
+        master.rowconfigure(1, weight=1)
+        master.rowconfigure(2, weight=1)
+        master.rowconfigure(3, weight=1)
+        master.rowconfigure(4, weight=1)
+        master.rowconfigure(5, weight=1)
+        
+        ### MAIN FRAME STYLE ###
+        self.style = ttk.Style()
+        self.style.configure('TFrame', background = '#0082c9')
+        self.style.configure('TButton', background = '#0082c9')
+        self.style.configure('TLabel', background = '#0082c9', font = ('Arial', 11))
+        self.style.configure('Header.TLabel', font = ('Arial', 18, 'bold')) 
+       
+        self.frame_header = ttk.Frame(master)
+        self.frame_header.pack()
+        
+      
+        ### COMPANY LOGO ###
+        self.logo = PhotoImage(file = 'FILE PATH').subsample(3,3)
+        ### ALLIANZ LOGO ###
+        self.logoAZ = PhotoImage(file='FILE PATH').subsample(14,14)
+        ### ATHENE LOGO ###
+        self.logoAT = PhotoImage(file='FILE PATH').subsample(3,3)
+        ### FORESTERS LOGO ###
+        self.logoFR = PhotoImage(file='FILE PATH').subsample(10,10)
+        ### FIDELITY & GUARANTEE LOGO ###
+        self.logoFG = PhotoImage(file='FILE PATH').subsample(60,70)
+        ### GREAT AMERICAN LOGO ###
+        self.logoGA = PhotoImage(file='FILE PATH').subsample(4,4)
+        ### MIDLAND LOGO ###
+        self.logoMD = PhotoImage(file='FILE PATH').subsample(4,4)
+        ### MUTUAL OF OMAHA LOGO ###
+        self.logoMO = PhotoImage(file='FILE PATH').subsample(4,4)
+        ### NORTH AMERICAN LOGO ###
+        self.logoNA = PhotoImage(file='FILE PATH').subsample(4,4)
+        ### PRUDENTIAL LOGO ###
+        self.logoPT = PhotoImage(file='FILE PATH').subsample(12,12)
+        ### VOYA LOGO ###
+        self.logoVO = PhotoImage(file='FILE PATH').subsample(4,4)
+ 
+
+        ### WELCOME TEXT FOR UI ###
+        ttk.Label(self.frame_header, image = self.logo).grid(row = 0, column = 0, rowspan = 2, sticky='nsew')
+        ttk.Label(self.frame_header, text = 'Welcome Admin!', style = 'Header.TLabel').grid(row = 0, column = 1)
+        ttk.Label(self.frame_header, wraplength = 300,
+                  text = ("This application is for non-LSW commissions downloads.  "
+                          "Please select a carrier, account number, and date range.")).grid(row = 1, column = 1, padx = 10, pady = 10, sticky="nsew")
+         
+       ### INTITALIZE FRAME ###
+        self.frame_content = ttk.Frame(master)
+        self.frame_content.pack()
+    
+        ### FRAME LAYOUT ###
+        ttk.Label(self.frame_content, text = 'Select a Carrier:').grid(row = 0, column = 0, padx = 10, pady = 10, sticky = 'nsew')
+        
+        ttk.Button(self.frame_content, image = self.logoAZ, compound=LEFT,
+                   command = self.az_GoTo).grid(row = 1, column = 0, padx = 10, pady = 10, sticky = 'nsew')
+        ttk.Button(self.frame_content, image = self.logoAT, compound=LEFT, 
+                   command = self.at_GoTo).grid(row = 1, column = 1, padx = 10, pady = 10, sticky = 'nsew')
+        ttk.Button(self.frame_content, image = self.logoFG, compound=LEFT,
+                   command = self.fg_GoTo).grid(row = 2, column = 0, padx = 10, pady = 10, sticky = 'nsew')
+        ttk.Button(self.frame_content, image = self.logoFR, compound=LEFT,
+                   command = self.fr_GoTo).grid(row = 2, column = 1, padx = 10, pady = 10, sticky = 'nsew')
+        ttk.Button(self.frame_content, image = self.logoGA, compound=LEFT,
+                   command = self.ga_GoTo).grid(row = 3, column = 0, padx = 10, pady = 10, sticky = 'nsew')
+        ttk.Button(self.frame_content, image = self.logoMD, compound=LEFT,
+                   command = self.md_GoTo).grid(row = 3, column = 1, padx = 10, pady = 10, sticky = 'nsew')
+        ttk.Button(self.frame_content, image = self.logoMO, compound=LEFT,
+                   command = self.mo_GoTo).grid(row = 4, column = 0, padx = 10, pady = 10, sticky = 'nsew')
+        ttk.Button(self.frame_content, image = self.logoNA, compound=LEFT,
+                   command = self.na_GoTo).grid(row = 4, column = 1, padx = 10, pady = 10, sticky = 'nsew')
+        ttk.Button(self.frame_content, image = self.logoPT, compound=LEFT,
+                   command = self.pt_GoTo).grid(row = 5, column = 0, padx = 10, pady = 10, sticky = 'nsew')
+        ttk.Button(self.frame_content, image = self.logoVO, compound=LEFT,
+                   command = self.vo_GoTo).grid(row = 5, column = 1, padx = 10, pady = 10, sticky = 'nsew')
+
+### GO TO ALLIANZ LOGIN ###
+    def az_GoTo(self):
+        self.link1="https://accounts.google.com/ServiceLogin/signinchooser?service=mail&passive=true&rm=false&continue=https%3A%2F%2Fmail.google.com%2Fmail%2F&ss=1&scc=1&ltmpl=default&ltmplcache=2&emr=1&osid=1&flowName=GlifWebSignIn&flowEntry=ServiceLogin"
+        self.link2="https://www.allianzlife.com/login"
+        self.driver = webdriver.Chrome ("/Users/las/Desktop/Python/Selenium/chromedriver")
+        self.driver.get(self.link1)
+        self.driver.find_element_by_id("identifierId").send_keys("EMAIL")
+        self.driver.find_element_by_id("identifierNext").click()
+        time.sleep(1)
+        self.driver.find_element_by_name("password").send_keys("PASSWORD!")
+        self.driver.find_element_by_id("passwordNext").click()
+        self.driver.get(self.link2)
+        self.driver.find_element_by_id("NdbxLoginForm_username").send_keys("EnterUserName")
+        self.driver.find_element_by_id("NdbxLoginForm_password").send_keys("EnterPassword")
+        self.driver.find_element_by_name("loginButton").click()
+
+### GO TO ATHENE LOGIN ###
+    def at_GoTo(self):
+        self.link1="https://atheneannuity.com/portal/site/agent/login/!ut/p/a1/04_Sj9CPykssy0xPLMnMz0vMAfGjzOLN_b2NPI0sjLz8_R3NDBydfEMCDVzcjCzCTIEKIoEKDHAARwNC-sP1o8BK8JhQkBthkO6oqAgADLNOgA!!/dl5/d5/L2dBISEvZ0FBIS9nQSEh/"
+        self.driver = webdriver.Chrome ("/Users/las/Desktop/Python/Selenium/chromedriver")
+        self.driver.get(self.link1)
+        self.driver.find_element_by_id("j_id_8:userId").send_keys("EnterUserName")    
+        self.driver.find_element_by_id("j_id_8:password").send_keys("EnterPassword")
+        self.driver.find_element_by_id("j_id_8:buttonTwo").click()
+     
+### GO TO F&G LOGIN AND NEW BUSINESS SUMMARY ###
+    def fg_GoTo(self):
+        self.driver = webdriver.Chrome ("/Users/las/Desktop/Python/Selenium/chromedriver")
+        self.driver.implicitly_wait(100)
+        self.link1="https://saleslink.fglife.com/Logon/passport_logon.asp"
+        self.link2="https://saleslink.fglife.com/SaleslinkMVC/NewBusiness/NewBusinessSummary"
+        self.driver.get(self.link1)
+        time.sleep(1)
+        self.driver.find_element_by_name("AgentID").send_keys("EnterUserName")    
+        self.driver.find_element_by_name("Password").send_keys("EnterPassword")
+        self.driver.find_element_by_name("Submit").click()
+        time.sleep(3)
+        self.driver.get(self.link2)
+
+### GO TO FORESTERS LOGIN AND VIEW SUBMITTED CASES REPORT ###
+    def fr_GoTo(self): 
+        self.driver = webdriver.Chrome ("/Users/las/Desktop/Python/Selenium/chromedriver")
+        self.driver.implicitly_wait(100)
+        self.link1="https://termsandconditions.foresters.com/my.policy"
+        self.link2="https://reports.foresters.com/pages/SubmittedCasesReport.aspx"
+        #Go to Foresters and Login
+        self.driver.get(self.link1)
+        self.driver.find_element_by_xpath("//*[@id='main_table']/tbody/tr/td/table/tbody/tr[2]/td/a").click()
+        self.driver.find_element_by_name("username").send_keys("EnterUserName")    
+        self.driver.find_element_by_name("password").send_keys("EnterPassword!!")
+        self.driver.find_element_by_id("submit_row").click()
+        self.driver.get(self.link2) #Go to Submitted Business  
+        
+### GO TO GREAT AMERICAN LOGIN ###
+#### HAS ERROR, CANNOT LOGIN DUE TO UNRECOGNIZED COOKES NEEDS A PULL REQUEST TO SOLVE FOR MISSING COOKIES ###
+    def ga_GoTo(self):
+        self.driver = webdriver.Chrome ("/Users/las/Desktop/Python/Selenium/chromedriver")
+        self.driver.implicitly_wait(100)
+        self.link1="https://gaconnect.com/home"
+        self.driver.get(self.link1)
+        time.sleep(7)
+        # Manually Accept Alert
+        self.driver.find_element_by_id("UserName").send_keys("EnterUserName")    
+        self.driver.find_element_by_id("Password").send_keys("EnterPassword!")
+
+### GO TO MIDLAND LOGIN AND GO TO DATA FEEDS ###
+    def md_GoTo(self):
+        self.driver = webdriver.Chrome ("/Users/las/Desktop/Python/Selenium/chromedriver")
+        self.driver.implicitly_wait(100)
+        self.link1="https://www.midlandnational.com/"
+        self.link2="https://apps6.midlandnational.com/dss-ui/feedlist"
+        self.driver.get(self.link1)
+        time.sleep(3)
+        self.driver.find_element_by_id("okta-signin-username").send_keys("EnterUserName")    
+        self.driver.find_element_by_id("okta-signin-password").send_keys("EnterPassword")
+        self.driver.find_element_by_id("okta-signin-submit").click()
+        self.driver.get(self.link2)
+
+### GO TO MUTUAL OF OMAHA LOGIN & GO TO SUBMITTED BUSINESS###
+    def mo_GoTo(self):
+        self.driver = webdriver.Chrome ("/Users/las/Desktop/Python/Selenium/chromedriver")
+        self.driver.implicitly_wait(100)
+        self.link1="https://accounts.mutualofomaha.com/?r=https%3A%2F%2Fproducer.mutualofomaha.com%2Fenterprise%2Fmyportal%2Fhome%2F"
+        self.link2="https://producer.mutualofomaha.com/enterprise/myportal/home/reports/case-monitoring/!ut/p/z1/jY_BDoIwEEQ_qQOlBY8b1FYogRhB6cVwMiSKHoyJfy_2SEJhb5u8yZthll2YHbpPf-ve_XPo7uPfWnktdJIGOkIGaSJQ0YjCiFOgKsHODkgV6Sg2gErDGIRcZ3uFADswuybvAf55zBxh6k9EuHX-RAjOcZDr_B7BYt46xNdgaYOdSJpyA5JETX7kQClZO5aMZ1sY7lZ4gdejrusL-mr40g9IOHZD/#"
+        self.driver.get(self.link1)
+        self.driver.find_element_by_id("username").send_keys("Appreciation")    
+        self.driver.find_element_by_id("password").send_keys("EnterPassword!")
+        self.driver.find_element_by_id("signIn").click()
+        time.sleep(1)
+        self.driver.get(self.link2)
+    
+  ### GO TO NORTH AMERICAN LOGIN ###
+    def na_GoTo(self):
+      self.driver = webdriver.Chrome ("/Users/las/Desktop/Python/Selenium/chromedriver")
+      self.driver.implicitly_wait(100)
+      self.link1="https://www.northamericancompany.com/"
+      self.driver.get(self.link1)
+      self.driver.find_element_by_name("username").send_keys("Appreciationannuity")    
+      self.driver.find_element_by_id("okta-signin-password").send_keys("EnterPassword")
+      self.driver.find_element_by_id("okta-signin-submit").click()
+
+### GO TO PRUDENTIAL LOGIN ###
+    def pt_GoTo(self):
+        self.driver = webdriver.Chrome ("/Users/las/Desktop/Python/Selenium/chromedriver")
+        self.driver.implicitly_wait(100)
+        self.link1="https://www.myprotective.com/"
+        self.link2="https://www.myprotective.com/My-Business/"
+        self.link3="https://www.myprotective.com/idgjump.aspx?action=pending2011"
+        self.driver.get(self.link1)
+        self.driver.find_element_by_id("ctl00_ctl00_baseContent_content_Login_signInUser").send_keys("EnterUserName")    
+        self.driver.find_element_by_id("ctl00_ctl00_baseContent_content_Login_signInPassword").send_keys("EnterPassword")
+        self.driver.find_element_by_id("ctl00_ctl00_baseContent_content_Login_btnSubmit").click()
+        time.sleep(3)
+        self.driver.get(self.link2)
+        time.sleep(2)
+        self.driver.get(self.link3)
+
+ ### GO TO VOYA LOGIN ###
+  def vo_GoTo(self):
+        self.driver = webdriver.Chrome ("/Users/las/Desktop/Python/Selenium/chromedriver")
+        self.driver.implicitly_wait(100)
+        self.link1="https://professionals.voya.com/portal/public/login?TARGET=https%3A%2F%2Fprofessionals.voya.com%2Fportal%2Fsecure%2Fretirement"
+        self.link2="https://professionals.voya.com/portal/secure/comp"
+        self.driver.get(self.link1)
+        self.driver.find_element_by_name("USER").send_keys("EnterUserName")    
+        self.driver.find_element_by_name("PASSWORD").send_keys("EnterPassword")
+        self.driver.find_element_by_id("submit_sign_on").click()
+        self.driver.get(self.link2)
+    
+    
+if __name__ == "__main__": main()
